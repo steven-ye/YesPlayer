@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.yesplayer.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+
+    <!--
+    <fragment
+        android:id="@+id/nav_phone"
+        android:name="com.example.yesplayer.ui.phone.PhoneFragment"
+        android:label="@string/menu_phone"
+        tools:layout="@layout/fragment_phone" />-->
+    <fragment
+        android:id="@+id/nav_video"
+        android:name="com.example.yesplayer.ui.filelist.FilelistFragment"
+        android:label="@string/menu_video"
+        tools:layout="@layout/fragment_filelist" >
+        <argument
+            android:name="type"
+            app:argType="string"
+            android:defaultValue="video" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_audio"
+        android:name="com.example.yesplayer.ui.filelist.FilelistFragment"
+        android:label="@string/menu_audio"
+        tools:layout="@layout/fragment_filelist" >
+        <argument
+            android:name="type"
+            app:argType="string"
+            android:defaultValue="audio" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_phone"
+        android:name="com.example.yesplayer.ui.filelist.FilelistFragment"
+        android:label="@string/menu_phone"
+        tools:layout="@layout/fragment_filelist" >
+        <argument
+            android:name="type"
+            app:argType="string"
+            android:defaultValue="folder" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_filelist"
+        android:name="com.example.yesplayer.ui.filelist.FilelistFragment"
+        android:label="@string/menu_filelist"
+        tools:layout="@layout/fragment_history">
+        <argument
+            android:name="type"
+            app:argType="string"
+            android:defaultValue="folder" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_smbcifs"
+        android:name="com.example.yesplayer.ui.smbcifs.SmbFragment"
+        android:label="@string/menu_smbcifs"
+        tools:layout="@layout/fragment_smbcifs" />
+
+    <fragment
+        android:id="@+id/nav_history"
+        android:name="com.example.yesplayer.ui.history.HistoryFragment"
+        android:label="@string/menu_history"
+        tools:layout="@layout/fragment_history" />
+
+    <fragment
+        android:id="@+id/nav_setting"
+        android:name="com.example.yesplayer.ui.SettingFragment"
+        android:label="@string/menu_setting"
+        tools:layout="@layout/fragment_history" />
+</navigation>

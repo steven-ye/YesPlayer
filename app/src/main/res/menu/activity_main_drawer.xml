@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_menu_home"
+            android:title="@string/menu_home" />
+        <item
+            android:id="@+id/nav_video"
+            android:icon="@drawable/ic_baseline_movie_24"
+            android:title="@string/menu_video" />
+        <item
+            android:id="@+id/nav_audio"
+            android:icon="@drawable/ic_baseline_music_video_24"
+            android:title="@string/menu_audio" />
+        <item
+            android:id="@+id/nav_phone"
+            android:icon="@drawable/ic_menu_phone"
+            android:title="@string/menu_phone" />
+        <item
+            android:id="@+id/nav_smbcifs"
+            android:icon="@drawable/ic_baseline_device_hub_24"
+            android:title="@string/menu_smbcifs" />
+        <item
+            android:id="@+id/nav_history"
+            android:icon="@drawable/ic_menu_history"
+            android:title="@string/menu_history" />
+    </group>
+    <group>
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/ic_menu_settings"
+            android:title="@string/menu_setting" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_baseline_perm_device_information_24"
+            android:title="@string/menu_about"/>
+    </group>
+</menu>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="entries_player_list">
+        <item>系统播放器</item>
+        <item>EXO 播放器</item>
+        <item>IJK 播放器</item>
+    </string-array>
+    <string-array name="values_player_list">
+        <item>system</item>
+        <item>exo</item>
+        <item>ijk</item>
+    </string-array>
+</resources>

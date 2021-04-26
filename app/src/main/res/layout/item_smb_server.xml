@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingStart="5dp"
+    android:paddingEnd="5dp"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/item_smb_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:paddingTop="10dp"
+        android:background="@drawable/ic_baseline_desktop_windows_24"
+        android:textSize="10sp"
+        android:text="SMB"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_server_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="名称"/>
+
+        <TextView
+            android:id="@+id/item_server_ip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@android:color/darker_gray"
+            android:text="192.168.1.2"/>
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/item_more_icon"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="@android:color/transparent"
+        app:drawableEndCompat="@drawable/ic_baseline_more_vert_24"/>
+
+</LinearLayout>
