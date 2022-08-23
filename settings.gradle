@@ -1,2 +1,2 @@
-include ':app', ":libsmb"
+include ':app'
 rootProject.name = "Yes Player"

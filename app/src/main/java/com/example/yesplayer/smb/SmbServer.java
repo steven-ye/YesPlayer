@@ -3,7 +3,6 @@ package com.example.yesplayer.smb;
 import android.text.TextUtils;
 
 import com.example.yesplayer.smb.http.HttpContentListener;
-import com.xyoye.libsmb.SmbManager;
 
 import java.io.File;
 import java.io.IOException;

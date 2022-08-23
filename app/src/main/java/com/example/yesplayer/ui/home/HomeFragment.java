@@ -1,39 +1,32 @@
 package com.example.yesplayer.ui.home;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.example.yesplayer.AddServerDialog;
 import com.example.yesplayer.Config;
 import com.example.yesplayer.IApplication;
 import com.example.yesplayer.R;
-import com.example.yesplayer.SmbFileActivity;
+import com.example.yesplayer.smb.SmbManager;
 import com.example.yesplayer.utils.LoadingDialog;
 import com.example.yesplayer.utils.SPUtils;
-import com.example.yesplayer.utils.Utils;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.xyoye.libsmb.SmbManager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +36,13 @@ public class HomeFragment extends Fragment {
     private LoadingDialog loadingDialog;
     private SimpleAdapter adapter;
     private List<Map<String,String>> list;
+    private File[] fileList;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -50,7 +50,7 @@ public class HomeFragment extends Fragment {
                 new ViewModelProvider(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        loadingDialog = new LoadingDialog(getContext(), "扫描中");
+        loadingDialog = new LoadingDialog(getContext(), "扫描中, 请稍等");
 
         final TextView textView = root.findViewById(R.id.text_list_empty);
         final ListView listView = root.findViewById(R.id.listview_smbcifs);
@@ -64,10 +64,19 @@ public class HomeFragment extends Fragment {
 
         listView.setAdapter(adapter);
         listView.setOnItemClickListener((parent, view, position, id) -> {
+            loadingDialog.show();
+            /*
             Intent intent = new Intent(getActivity(), SmbFileActivity.class);
             intent.putExtra("name", list.get(position).get("name"));
             intent.putExtra("ip", list.get(position).get("ip"));
             startActivity(intent);
+            */
+            NavController navController =Navigation.findNavController(view);
+            Bundle args = new Bundle();
+            args.putString("title", list.get(position).get("name"));
+            args.putString("name", list.get(position).get("name"));
+            args.putString("ip", list.get(position).get("ip"));
+            navController.navigate(R.id.nav_smbfilelist, args);
         });
 
         homeViewModel.getList().observe(getViewLifecycleOwner(), maps ->{
@@ -82,32 +91,36 @@ public class HomeFragment extends Fragment {
 
         homeViewModel.setList(SPUtils.getInstance().getDataList(Config.SP_SERVERS));
 
-        FloatingActionButton fab_refresh = root.findViewById(R.id.fab_smbcifs);
-        fab_refresh.setOnClickListener(view -> {
-            getServers();
-        });
-
-        FloatingActionButton fab_add = root.findViewById(R.id.fab_add);
-        fab_add.setOnClickListener(view -> {
-            /*
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-             */
-            AddServerDialog dialog = new AddServerDialog();
-            dialog.setCancelable(false);
-            dialog.setOnClickListener(map -> {
-                List<Map<String, String>> newList = new ArrayList<>(list);
-                newList.add(map);
-                homeViewModel.setList(newList);
-            });
-            dialog.show(getParentFragmentManager(),"AddServerDialog");
-        });
+        /*
+        final EmptyRecyclerView recyclerView = root.findViewById(R.id.file_list);
+        View emptyView = root.findViewById(R.id.file_list_empty);
+        recyclerView.setEmptyView(emptyView);
+        fileList = homeViewModel.getFileList().getValue();
+        FileAdapter fileAdapter = new FileAdapter(R.layout.item_file,fileList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(fileAdapter);
+        */
 
         root.findViewById(R.id.local_video).setOnClickListener(this::onClick);
         root.findViewById(R.id.local_audio).setOnClickListener(this::onClick);
         root.findViewById(R.id.local_folder).setOnClickListener(this::onClick);
 
         return root;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.item_refresh){
+            getServers();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -127,7 +140,7 @@ public class HomeFragment extends Fragment {
 
             default:
                 args.putString("title", getString(R.string.menu_phone));
-                args.putString("type", "folder");
+                args.putString("type", "");
                 break;
         }
         navController.navigate(R.id.nav_filelist, args);
@@ -137,11 +150,17 @@ public class HomeFragment extends Fragment {
         loadingDialog.show();
 
         IApplication.getExecutor().submit(()->{
-            List<Map<String,String>> servers = SmbManager.getInstance().getServerList();
+            List<Map<String,String>> servers = SmbManager.getInstance().getServerList(getContext());
             getActivity().runOnUiThread(()->{
                 loadingDialog.cancel();
                 homeViewModel.setList(servers);
             });
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(loadingDialog.isShowing()) loadingDialog.dismiss();
     }
 }

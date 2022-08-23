@@ -3,13 +3,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 30
 
     defaultConfig {
         applicationId "com.example.yesplayer"
-        minSdkVersion 23
-        targetSdkVersion 29
+        minSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -26,41 +25,48 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'x86_84', 'armeabi-v7a', 'armeabi'
+            universalApk false
+        }
+    }
 }
 
 dependencies {
-    implementation project(path: ':libsmb')
     //implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.4.0'
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation 'androidx.navigation:navigation-fragment:2.2.2'
-    implementation 'androidx.navigation:navigation-ui:2.2.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation 'androidx.navigation:navigation-fragment:2.3.5'
+    implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation 'androidx.preference:preference:1.1.1'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+    implementation 'androidx.annotation:annotation:1.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation 'com.scwang.smart:refresh-layout-kernel:2.0.1'
     implementation 'com.scwang.smart:refresh-header-material:2.0.1'
     implementation 'com.scwang.smart:refresh-footer-classics:2.0.1'
-    implementation 'com.google.android.exoplayer:exoplayer:2.12.1'
+    implementation 'com.google.android.exoplayer:exoplayer:2.15.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
-    //implementation files('libs/cybergarage-upnp-core-2.1.1.jar')
-    implementation('com.danikula:videocache:2.7.0'){
-        exclude group:'org.slf4j'
-    }
+
+    implementation 'com.danikula:videocache:2.7.0'
     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
     //implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
 
-    implementation 'cn.jzvd:jiaozivideoplayer:7.6.0'  //饺子播放器
+    implementation 'cn.jzvd:jiaozivideoplayer:7.7.0'  //饺子播放器
+    implementation'org.nanohttpd:nanohttpd:2.3.1'
 
-    //implementation('com.hierynomus:smbj:0.10.0')
-    //implementation 'eu.agno3.jcifs:jcifs-ng:2.1.4'
-    //implementation files('libs/jcifs-ng-2.1.4-03.jar')
-    //implementation files('libs/jcifs-ng-2.1.3.jar')
-
+    implementation 'com.hierynomus:smbj:0.11.5'
+    implementation files('libs/jcifs-1.3.19.jar')
 }

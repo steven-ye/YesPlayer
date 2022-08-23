@@ -39,7 +39,8 @@ public class LoadingDialog extends Dialog {
         }
     }
 
-    public void updateText(String text) {
+    public void show(String text) {
         textView.setText(text);
+        this.show();
     }
 }

@@ -15,4 +15,10 @@
         android:summary="@string/setting_history_summary"
         android:icon="@drawable/ic_menu_history"
         android:defaultValue="true"/>
+    <SwitchPreferenceCompat
+        android:defaultValue="true"
+        android:icon="@drawable/ic_baseline_filter_tilt_shift_24"
+        android:key="setting_hidden"
+        android:summary="@string/setting_hidden_summary"
+        android:title="@string/setting_hidden_title" />
 </PreferenceScreen>

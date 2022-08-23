@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>上传文件</title>
+    <style>
+    *{margin: 0; padding:0;box-sizing:border-box; }
+    header{margin:0 auto; padding: 15px; text-align: center;border-bottom:1px solid #ccc;}
+    section{margin: 0 auto; width: 480px; min-height: 400px;}
+    ol{list-style-position: inside;}
+    ol li{margin: 2px; padding: 5px;}
+    input[type=file]{display:none;}
+    .button{border: 1px solid #ddd; padding: 5px;}
+    .body{min-height: 100px;}
+    .footer{padding: 15px;}
+    .modal-wrapper{position: fixed; top:0;right:0;left:0;bottom:0;z-index: 1; background: rgba(10,10,10,0.7);display:none}
+    .modal{margin-top: -300px; margin-left: -300px; padding: 0; width:600px; background:white;
+      position: fixed;left:50%; top: 50%;}
+    .modal-header,.modal-footer{line-height: 50px; padding: 5px;text-align: center; }
+    .modal-header{font-size: 1.5em;color:#000;border-bottom:1px solid #ccc;}
+    .modal-footer{border-top:1px solid #ccc;}
+    .modal-body{margin:0 5px; padding: 15px; overflow-y: auto; min-height: 100px;max-height: 500px;}
+    .modal-footer button{width: 60px; line-height: 30px;}
+    .modal-body>ul>li{margin: 2px 0;position:relative; height: 1.5em; line-height:1.5em;list-style: none;}
+    .modal-body>ul>li>p{margin-right: 125px; white-space:nowrap;text-overflow:ellipsis;overflow: hidden;}
+    .modal-body>ul>li .progress{width: 120px; position:absolute; right: 0; top:0;bottom:0;}
+    .progress{color:white; background: #ccc; text-align:center;font-size:0.7em;position:relative}
+    .progress>i{width: 1px; background: blue;position:absolute;top:0;left:0;bottom:0;}
+    .progress>span{position:absolute;left:0;right:0;line-height:20px;z-index:2;}
+</style>
+</head>
+<body>
+<header>
+    <h1>上传文件</h1>
+</header>
+<section>
+    <div id="main" class="body">
+        <ol>
+            <li>文件加载中 ...</li>
+        </ol>
+    </div>
+    <div class="footer">
+        <button class="button" onclick="upfile()">上传文件</button>
+    </div>
+</section>
+<div class="modal-wrapper">
+    <div class="modal">
+        <div class="modal-header">选择的文件</div>
+        <div class="modal-body">
+          <ul></ul>
+        </div>
+        <div class="modal-footer">
+            <button name="upload">上传</button>
+            <button name="cancel">取消</button>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+function upfile(){
+  var input = document.createElement("input");
+  input.type = "file";
+  input.setAttribute("multiple", true);
+  input.setAttribute("accept", "video/*");
+  input.onchange=function(e){
+    var modal = new Modal();
+    modal.show(input.files);
+    document.body.removeChild(this);
+  }
+  document.body.appendChild(input);
+  input.click();
+}
+
+function getFiles(){
+  var div = document.getElementById("main");
+  div.innerHTML = "<i>文件加载中 ...</i>";
+  ajax({
+    url: "./files",
+    success: function(resText){
+      var json = JSON.parse(resText);
+      if(json && json.length){
+        div.innerHTML = "";
+        var ol = document.createElement("ol");
+        for(var i=0;i<json.length;i++){
+          var li = document.createElement("li");
+          li.innerHTML = json[i];
+          ol.appendChild(li);
+        }
+        div.appendChild(ol);
+      }else{
+        div.innerHTML = "没有文件";
+      }
+    },
+    fail: function(xhr){
+      console.error(xhr);
+      div.innerHTML = "<i>文件列表加载失败</i>";
+    }
+  });
+}
+
+function ajax(option){
+  option = option || {};
+  var method = option.method || "GET";
+  var data = option.data || null;
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function(){
+    if(xhr.readyState == 4){
+        if(xhr.status ==200){
+            //alert(this.responseText);
+            option.success && option.success(xhr.responseText);
+　　　　　}else{
+            option.fail && option.fail(xhr);
+        }
+        option.complete && option.complete(xhr);
+    }
+  }
+
+  xhr.upload.onprogress = (option.upload && option.upload.onprogress) || null;
+  xhr.onprogress = option.onprogress || null;
+  xhr.onload = option.onload || null;
+  xhr.onerror = option.onerror || null;
+  xhr.ontimeout = option.ontimeout || null;
+  xhr.open(method, option.url, true);
+  xhr.send(data);
+  return xhr;
+}
+
+window.onload = function(){
+  getFiles();
+}
+
+//Modal
+function Modal(option){
+  this.ele = document.querySelector(".modal-wrapper");
+  this.body = document.querySelector(".modal-body");
+  this.ul = this.body.querySelector("ul");
+  this.count = 0;
+  this.files = [];
+  this.status = 0; //0-准备上传; 1-上传中; 2-上传完成
+  var that = this;
+  this.on("cancel", function(){that.hide();});
+  this.on("upload", function(e){
+    if(that.status == 0){
+       that.upload(e);
+    }else if(that.status == 1){
+       if(confirm("是否中止上传？")){
+          alert("中止上传失败,请关闭手机服务中止上传");
+       }
+    }else{
+      alert("已经上传完成,请关闭后重新选择文件");
+    }
+  });
+}
+Modal.prototype={
+  show:function(files){
+    this.count = 0;
+    this.files = files;
+    this.ele.style.display="block";
+    this.ul.innerHTML = "";
+    for(var i=0;i<files.length;i++){
+      var li = document.createElement("li");
+      li.innerHTML = '<p>'+files[i].name + '</p><div class="progress"><i></i><span>未上传</span></div>';
+      li.id = "file"+i;
+      li.name = files[i].name;
+      this.ul.appendChild(li);
+    }
+  },
+  hide: function(){
+    if(this.status == 1) return;
+    this.ele.style.display="none";
+  },
+  progress: function(idx, message, percent){
+    var lis = this.ul.querySelectorAll("li");
+    //console.log(idx, lis[idx], lis);
+    var bar = lis[idx].querySelector("i");
+    var span = lis[idx].querySelector("span");
+    if(percent !== undefined){
+      bar.style.width = percent + "%";
+      span.innerHTML = message + percent + "%";
+    }
+    if(message) span.innerHTML = message;
+  },
+  on: function(event, callback){
+    var btn = this.ele.querySelector("button[name="+event+"]");
+    if(btn) btn.onclick = callback || null;
+  },
+  upload: function(e){
+    var files = this.files;
+    console.log("upload files:", files);
+    if(files.length){
+      this.status = 1;
+      //e.target.disabled = true;
+      for(var file,i=0;i<files.length;i++){
+        this.uploadFile(i);
+      }
+    }else{
+      alert("没有选择上传文件");
+    }
+  },
+  uploadFile: function(idx){
+    var i=0; i = idx; //必须这样写，不然i会与idx一起自增
+    var modal=this,file = this.files[i];
+    var formData = new FormData();
+    formData.append('file', file);
+    ajax({
+      url: "upload",
+      method: "POST",
+      data: formData,
+      upload: {
+        onprogress: function(evt){
+          if (evt.lengthComputable) {
+            var percent = 100 * evt.loaded/evt.total;
+            percent = percent.toFixed(2);
+            //console.log(i, file.name, percent + '%');
+            modal.progress(i, "", percent);
+          }
+        }
+      },
+      onload: function(evt){
+        if(this.status == 200){
+          if(!this.response) this.response = this.responseText;
+          console.log("上传成功！", evt);
+          modal.progress(i, "上传成功", 100);
+        }else{
+          console.warn("上传失败: ", this.status, evt);
+          modal.progress(i, "上传失败");
+        }
+      },
+      onerror: function(evt){
+        console.error("上传出错了", file.name);
+        modal.progress(i, "上传出错");
+      },
+      complete:function(xhr){
+        modal.count++;
+        console.log(modal.count);
+        if(modal.count == modal.files.length){
+          modal.status = 2;
+        }
+      }
+    });
+  }
+}
+</script>
+</html>

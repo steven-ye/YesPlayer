@@ -1,5 +1,6 @@
 package com.example.yesplayer.utils;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,14 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.xyoye.libsmb.info.SmbFileInfo;
+import com.example.yesplayer.smb.info.SmbFileInfo;
 import com.example.yesplayer.IApplication;
 import com.example.yesplayer.R;
 
 import java.util.List;
 
 public class SmbFileAdapter extends RecyclerView.Adapter<SmbFileAdapter.ViewHolder>{
-    List<SmbFileInfo> smbFileInfoList;
+    final List<SmbFileInfo> smbFileInfoList;
     int mLayoutResId;
     public SmbFileAdapter(@LayoutRes int layoutResId, @Nullable List<SmbFileInfo> data) {
         mLayoutResId = layoutResId;
@@ -30,11 +31,11 @@ public class SmbFileAdapter extends RecyclerView.Adapter<SmbFileAdapter.ViewHold
         int iconId = R.drawable.ic_baseline_help_outline_24;
         if(item.isDirectory()){
             iconId = R.drawable.ic_baseline_folder_open_24;
-        }else if(CommonUtils.isMediaFile(item.getFileName())){
+        }else if(FileUtils.isMediaFile(item.getFileName())){
             iconId = R.drawable.ic_baseline_movie_24;
-        }else if(CommonUtils.isMusicFile(item.getFileName())){
+        }else if(FileUtils.isMusicFile(item.getFileName())){
             iconId = R.drawable.ic_baseline_music_video_24;
-        }else if(CommonUtils.isImageFile(item.getFileName())){
+        }else if(FileUtils.isImageFile(item.getFileName())){
             iconId = R.drawable.ic_baseline_image_24;
         }
         holder.setImageResource(R.id.iv, iconId)
@@ -45,12 +46,13 @@ public class SmbFileAdapter extends RecyclerView.Adapter<SmbFileAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(IApplication._getContext()).inflate(mLayoutResId,parent,false);
+        View view = LayoutInflater.from(IApplication.getContext()).inflate(mLayoutResId,parent,false);
         return new ViewHolder(view, this);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        //int position = holder.getAbsoluteAdapterPosition();
         convert(holder, smbFileInfoList.get(position));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +68,12 @@ public class SmbFileAdapter extends RecyclerView.Adapter<SmbFileAdapter.ViewHold
     @Override
     public int getItemCount() {
         return smbFileInfoList.size();
+    }
+
+    public void setList(List<SmbFileInfo> list){
+        smbFileInfoList.clear();
+        smbFileInfoList.addAll(list);
+        notifyDataSetChanged();
     }
 
     private ItemChildClickListener itemChildClickListener;

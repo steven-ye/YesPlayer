@@ -23,7 +23,7 @@ public class IApplication extends Application {
         executorService = Executors.newSingleThreadExecutor();
     }
 
-    public static Context _getContext(){
+    public static Context getContext(){
         return application.getApplicationContext();
     }
 

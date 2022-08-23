@@ -53,6 +53,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:background="@android:color/transparent"
-        app:drawableEndCompat="@drawable/ic_baseline_more_vert_24"/>
+        app:drawableEndCompat="@drawable/ic_baseline_keyboard_arrow_right_24" />
 
 </LinearLayout>

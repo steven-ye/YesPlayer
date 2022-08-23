@@ -1,7 +1,6 @@
 package com.example.yesplayer.ui.history;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -15,37 +14,22 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.yesplayer.Config;
 import com.example.yesplayer.EmptyRecyclerView;
-import com.example.yesplayer.IApplication;
 import com.example.yesplayer.PlayerActivity;
 import com.example.yesplayer.R;
+import com.example.yesplayer.helper.HistoryHelper;
 import com.example.yesplayer.service.SmbService;
+import com.example.yesplayer.smb.SmbManager;
 import com.example.yesplayer.smb.SmbServer;
-import com.example.yesplayer.utils.FileAdapter;
-import com.example.yesplayer.utils.FileInfo;
+import com.example.yesplayer.smb.info.SmbLinkInfo;
+import com.example.yesplayer.object.FileInfo;
+import com.example.yesplayer.utils.FileInfoAdapter;
 import com.example.yesplayer.utils.LoadingDialog;
-import com.example.yesplayer.utils.SPUtils;
 import com.example.yesplayer.utils.Utils;
-import com.xyoye.libsmb.SmbManager;
-import com.xyoye.libsmb.info.SmbLinkInfo;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.TimeUnit;
 
 public class HistoryFragment extends Fragment {
     HistoryViewModel historyViewModel;
@@ -58,23 +42,27 @@ public class HistoryFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_history, container, false);
         loadingDialog = new LoadingDialog(getContext(),"加载中，请稍等 ...");
 
-        List<FileInfo> fileList = historyViewModel.getList().getValue();
+        List<FileInfo> fileList = HistoryHelper.getList();
         assert fileList != null;
         final EmptyRecyclerView recyclerView = root.findViewById(R.id.rv_history);
         recyclerView.setEmptyView(root.findViewById(R.id.text_list_empty));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        FileAdapter fileAdapter = new FileAdapter(R.layout.item_smb_file, fileList);
+        FileInfoAdapter fileAdapter = new FileInfoAdapter(R.layout.item_file, fileList);
+        fileAdapter.showAction(true);
         recyclerView.setAdapter(fileAdapter);
         fileAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             FileInfo fileInfo = fileList.get(position);
             play(fileInfo);
         });
-        historyViewModel.getList().observe(getViewLifecycleOwner(), objects -> {
-            fileList.clear();
-            fileList.addAll(objects);
-            fileAdapter.notifyDataSetChanged();
+        fileAdapter.setOnItemActionClickListener((adapter, view, position) -> {
+            FileInfo fileInfo = fileList.get(position);
+            Log.d("Delete history", fileInfo.getFileName());
+            if(HistoryHelper.remove(position)){
+                fileList.remove(position);
+                fileAdapter.notifyDataSetChanged();
+                Utils.showToast("删除成功");
+            }
         });
-        getList();
 
         smbLinkInfo = new SmbLinkInfo();
         smbLinkInfo.setDomain("");
@@ -155,17 +143,6 @@ public class HistoryFragment extends Fragment {
         }.execute();
     }
 
-    private void getList(){
-        List<Map<String,String>> list = SPUtils.getInstance().getDataList(Config.SP_HISTORY);
-        List<FileInfo> fileList = new ArrayList<>();
-        for(Map<String,String> map: list){
-            FileInfo info = new FileInfo(map.get("name"), map.get("path"),map.get("url"));
-            info.setIp(map.get("ip"));
-            fileList.add(info);
-        }
-        historyViewModel.setList(fileList);
-    }
-
     public void onPause(){
         super.onPause();
         loadingDialog.cancel();
@@ -173,34 +150,5 @@ public class HistoryFragment extends Fragment {
     public void onStop() {
         super.onStop();
         stopService();
-    }
-
-    // save the history
-    public static void saveHistory(String name,String path, String url,String ip){
-        boolean settingHistory = PreferenceManager.getDefaultSharedPreferences(IApplication._getContext()).getBoolean("setting_history",true);
-        if(!settingHistory) return;
-        //如果设置允许记录播放历史
-        List<Map<String,String>> list = SPUtils.getInstance().getDataList(Config.SP_HISTORY);
-
-        for(Map<String,String> map:list){
-            if(map.get("url").equals(url)) {
-                list.remove(map);
-                break;
-            }
-        }
-        Map<String,String> map = new HashMap<>();
-        map.put("name",name);
-        map.put("path",path);
-        map.put("url",url);
-        map.put("ip",ip);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.CHINA);// HH:mm:ss
-        //获取当前时间
-        Date date = new Date(System.currentTimeMillis());
-        map.put("time", dateFormat.format(date));
-        list.add(0, map);
-        if(list.size()>30){
-            list.remove(list.size()-1);
-        }
-        SPUtils.getInstance().putDataList(Config.SP_HISTORY,list);
     }
 }

@@ -4,21 +4,16 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
-import androidx.preference.PreferenceManager;
 
 import com.example.yesplayer.IApplication;
-import com.example.yesplayer.MainActivity;
 import com.example.yesplayer.R;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -50,7 +45,7 @@ public class Utils {
     }
 
     public static void showToast(String text){
-        Toast.makeText(IApplication._getContext(),text,Toast.LENGTH_SHORT).show();
+        Toast.makeText(IApplication.getContext(),text,Toast.LENGTH_SHORT).show();
     }
     public static void alert(Context context,String text){
         alert(context,text,null);
@@ -78,7 +73,7 @@ public class Utils {
         try {
             //文件路径  /data/data/com.example.myapplication/files/
             //MODE_PRIVATE（默认）：覆盖、MODE_APPEND：追加
-            fos = IApplication._getContext().openFileOutput(filename, Context.MODE_PRIVATE);
+            fos = IApplication.getContext().openFileOutput(filename, Context.MODE_PRIVATE);
             fos.write(string.getBytes());
             fos.close();
         } catch (IOException e) {
@@ -90,7 +85,7 @@ public class Utils {
         BufferedReader reader = null;
         StringBuilder builder = new StringBuilder();
         try{
-            FileInputStream fis = IApplication._getContext().openFileInput(filename);
+            FileInputStream fis = IApplication.getContext().openFileInput(filename);
             reader = new BufferedReader(new InputStreamReader(fis));
             String line= "";
             while((line = reader.readLine())!=null){

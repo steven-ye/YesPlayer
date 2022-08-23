@@ -11,15 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.yesplayer.EmptyRecyclerView;
 import com.example.yesplayer.PlayerActivity;
 import com.example.yesplayer.R;
-import com.example.yesplayer.ui.history.HistoryFragment;
-import com.example.yesplayer.utils.CommonUtils;
-import com.example.yesplayer.utils.FileAdapter;
-import com.example.yesplayer.utils.FileInfo;
+import com.example.yesplayer.helper.HistoryHelper;
+import com.example.yesplayer.utils.FileUtils;
+import com.example.yesplayer.object.FileInfo;
+import com.example.yesplayer.utils.FileInfoAdapter;
 import com.example.yesplayer.utils.Utils;
 
 import java.io.File;
@@ -29,7 +28,7 @@ import java.util.List;
 public class PhoneFragment extends Fragment {
 
     private PhoneViewModel phoneViewModel;
-    private FileAdapter fileAdapter;
+    private FileInfoAdapter fileAdapter;
     private File rootPath;
     private File folder;
     private View viewGoUp;
@@ -49,7 +48,7 @@ public class PhoneFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setEmptyView(emptyView);
         final List<FileInfo> fileList = phoneViewModel.getList().getValue();
-        fileAdapter = new FileAdapter(R.layout.item_smb_file, fileList);
+        fileAdapter = new FileInfoAdapter(R.layout.item_smb_file, fileList);
         fileAdapter.setOnItemChildClickListener((adapter, view, position) -> {
             FileInfo fileInfo = fileList.get(position);
             if(fileInfo.isDirectory()){
@@ -100,7 +99,7 @@ public class PhoneFragment extends Fragment {
 
     public void openFile(FileInfo info){
         Utils.log("FileName: "+info.getPath());
-        if (!CommonUtils.isMediaFile(info.getFileName()) && !CommonUtils.isMusicFile(info.getFileName())) {
+        if (!FileUtils.isMediaFile(info.getFileName()) && !FileUtils.isMusicFile(info.getFileName())) {
             Utils.showToast("不是可播放的视频文件");
             return;
         }
@@ -110,6 +109,6 @@ public class PhoneFragment extends Fragment {
         intent.putExtra("videoUrl", videoUrl);
         startActivity(intent);
         // save the history
-        HistoryFragment.saveHistory(info.getFileName(),info.getPath(),videoUrl,null);
+        HistoryHelper.save(info);
     }
 }

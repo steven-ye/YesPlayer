@@ -20,18 +20,25 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class cn.jzvd.*{*;}
--keep public class * extends cn.jzvd.JZMediaInterface
--keep public class * extends cn.jzvd.JzvdStd
+#-keep class cn.jzvd.*{*;}
+#-keep public class * extends cn.jzvd.JZMediaInterface
+#-keep public class * extends cn.jzvd.JzvdStd
 
--keep class tv.danmaku.ijk.media.player.* {*; }
--dontwarn tv.danmaku.ijk.media.player.*
--keep interface tv.danmaku.ijk.media.player.* { *; }
+#-keep class tv.danmaku.ijk.media.player.* {*; }
+#-dontwarn tv.danmaku.ijk.media.player.*
+#-keep interface tv.danmaku.ijk.media.player.* { *; }
 
 #aliyunplayer
--keep class com.alivc.*{*;}
--keep class com.aliyun.*{*;}
--keep class com.cicada.*{*;}
--dontwarn com.alivc.**
--dontwarn com.aliyun.**
--dontwarn com.cicada.**
+#-keep class com.alivc.*{*;}
+#-keep class com.aliyun.*{*;}
+#-keep class com.cicada.*{*;}
+#-dontwarn com.alivc.**
+#-dontwarn com.aliyun.**
+#-dontwarn com.cicada.**
+
+
+-keep public class cn.jzvd.JZMediaSystem {*; }
+
+-keep class tv.danmaku.ijk.media.player.** {*; }
+-dontwarn tv.danmaku.ijk.media.player.*
+-keep interface tv.danmaku.ijk.media.player.** { *; }

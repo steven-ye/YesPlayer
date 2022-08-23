@@ -13,3 +13,13 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Windows thumbnail db
+Thumbs.db
+
+#built application files
+*.apk
+*.ap_
+
+# Signing files
+.signing/

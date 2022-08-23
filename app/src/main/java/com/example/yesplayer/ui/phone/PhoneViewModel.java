@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.yesplayer.utils.FileInfo;
+import com.example.yesplayer.object.FileInfo;
 
 import java.util.ArrayList;
 import java.util.List;
