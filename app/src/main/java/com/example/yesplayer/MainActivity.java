@@ -1,6 +1,7 @@
 package com.example.yesplayer;
 
 import android.os.Bundle;
+import android.view.Menu;
 
 import com.example.yesplayer.utils.Utils;
 import com.google.android.material.navigation.NavigationView;
@@ -57,5 +58,11 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 }

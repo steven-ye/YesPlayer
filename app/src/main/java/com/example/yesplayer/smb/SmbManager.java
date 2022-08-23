@@ -132,19 +132,16 @@ public class SmbManager {
     public List<Map<String,String>> getServerList(Context context){
         final List<Map<String,String>> servers = new ArrayList<>();
         String devAddress = IPUtils.getIPAdress(context);
-        String localSegment = getLocAddrIndex(devAddress);
+        String localSegment = IPUtils.getLocAddrIndex(devAddress);
         ExecutorService executorService = Executors.newCachedThreadPool();
         for(int i=1;i<255;i++){
             final String ip = localSegment + i;
-            Runnable syncTask = new Runnable() {
-                @Override
-                public void run() {
-                    if(isLinkable(ip)){
-                        Map<String,String> map = new HashMap<>();
-                        map.put("ip",ip);
-                        map.put("name", getNameByIp(ip));
-                        servers.add(map);
-                    }
+            Runnable syncTask = () -> {
+                if(isLinkable(ip)){
+                    Map<String,String> map = new HashMap<>();
+                    map.put("ip",ip);
+                    map.put("name", IPUtils.getNameByIp(ip));
+                    servers.add(map);
                 }
             };
             executorService.execute(syncTask);
@@ -170,66 +167,5 @@ public class SmbManager {
             Log.e(TAG, e.getMessage());
         }
         return false;
-    }
-
-    /**
-     * TODO<获取本地ip地址>
-     *
-     * @return String
-     */
-    public String getLocAddress() {
-        String ipaddress = "";
-
-        try {
-            Enumeration<NetworkInterface> en = NetworkInterface
-                    .getNetworkInterfaces();
-            // 遍历所用的网络接口
-            while (en.hasMoreElements()) {
-                NetworkInterface networks = en.nextElement();
-                // 得到每一个网络接口绑定的所有ip
-                Enumeration<InetAddress> address = networks.getInetAddresses();
-                // 遍历每一个接口绑定的所有ip
-                while (address.hasMoreElements()) {
-                    InetAddress ip = address.nextElement();
-                    if (!ip.isLoopbackAddress()
-                            && (ip instanceof Inet4Address)) {
-                        ipaddress = ip.getHostAddress();
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            //Log.e(TAG, "获取本地ip地址失败");
-            e.printStackTrace();
-        }
-        //Log.e(TAG, "本机IP:" + ipaddress);
-        return ipaddress;
-    }
-
-    /**
-     * TODO<获取本机IP前缀>
-     * @param devAddress
-     *   // 本机IP地址
-     * @return String
-     */
-    public String getLocAddrIndex(String devAddress) {
-        if (!devAddress.equals("")) {
-            return devAddress.substring(0, devAddress.lastIndexOf(".") + 1);
-        }
-        return null;
-    }
-
-    public String getNameByIp(String ip){
-        //String firstname = "Unknown";
-        String netbiosName = "Unknown";
-        try{
-            NbtAddress[] nbts = NbtAddress.getAllByAddress(ip);
-            netbiosName = nbts[0].getHostName();
-            NbtAddress nbtAddress = NbtAddress.getByName(ip);
-            //firstname = nbtAddress.firstCalledName();
-            //netbiosName = nbtAddress.nextCalledName();
-        }catch (UnknownHostException e){
-            e.printStackTrace();
-        }
-        return netbiosName;
     }
 }

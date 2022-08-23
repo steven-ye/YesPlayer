@@ -9,7 +9,10 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
+
+import jcifs.netbios.NbtAddress;
 
 public class IPUtils {
     public static String getIPAdress(Context context){
@@ -31,6 +34,39 @@ public class IPUtils {
                 ((ipAddress >> 24) & 0xFF);
     }
 
+    public static String getNameByIp(String ip){
+        //String firstname = "Unknown";
+        String netbiosName = "Unknown";
+        try{
+            NbtAddress[] nbts = NbtAddress.getAllByAddress(ip);
+            netbiosName = nbts[0].getHostName();
+            NbtAddress nbtAddress = NbtAddress.getByName(ip);
+            //firstname = nbtAddress.firstCalledName();
+            //netbiosName = nbtAddress.nextCalledName();
+        }catch (UnknownHostException e){
+            e.printStackTrace();
+        }
+        return netbiosName;
+    }
+
+    /**
+     * TODO<获取本机IP前缀>
+     * @param devAddress
+     *   // 本机IP地址
+     * @return String
+     */
+    public static String getLocAddrIndex(String devAddress) {
+        if (!devAddress.equals("")) {
+            return devAddress.substring(0, devAddress.lastIndexOf(".") + 1);
+        }
+        return null;
+    }
+
+    /**
+     * TODO<获取本地ip地址>
+     *
+     * @return String
+     */
     public static String getIPAdress(){
         String ip = null;
         try {

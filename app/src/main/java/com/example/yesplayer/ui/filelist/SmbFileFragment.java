@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -107,6 +108,15 @@ public class SmbFileFragment extends Fragment {
         startService();
 
         return root;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.item_refresh){
+            getSelfData();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void showGoUp(){

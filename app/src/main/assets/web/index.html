@@ -6,7 +6,7 @@
     <style>
     *{margin: 0; padding:0;box-sizing:border-box; }
     header{margin:0 auto; padding: 15px; text-align: center;border-bottom:1px solid #ccc;}
-    section{margin: 0 auto; width: 480px; min-height: 400px;}
+    .wrapper{margin: 0 auto; width: 600px; min-height: 400px;}
     ol{list-style-position: inside;}
     ol li{margin: 2px; padding: 5px;}
     input[type=file]{display:none;}
@@ -33,8 +33,8 @@
 <header>
     <h1>上传文件</h1>
 </header>
-<section>
-    <div id="main" class="body">
+<section class="wrapper">
+    <div id="main" class="main">
         <ol>
             <li>文件加载中 ...</li>
         </ol>
@@ -221,6 +221,7 @@ Modal.prototype={
           if(!this.response) this.response = this.responseText;
           console.log("上传成功！", evt);
           modal.progress(i, "上传成功", 100);
+          getFiles();
         }else{
           console.warn("上传失败: ", this.status, evt);
           modal.progress(i, "上传失败");

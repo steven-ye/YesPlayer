@@ -127,8 +127,6 @@ public class FilelistFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         if(type.equals("") || type.equals("local")){
             inflater.inflate(R.menu.menu_file_local, menu);
-        }else{
-            inflater.inflate(R.menu.menu_file, menu);
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -262,7 +260,9 @@ public class FilelistFragment extends Fragment {
                     @Override
                     public void run() {
                         if(fileList.size()>0){
-                            Utils.showToast("文件上传成功");
+                            for(File f: fileList){
+                                Utils.showToast("上传成功: " + f.getName());
+                            }
                             open(rootPath);
                         }else{
                             Utils.showToast("没有上传文件");
