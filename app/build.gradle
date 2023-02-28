@@ -40,7 +40,7 @@ dependencies {
     //implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.9.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
@@ -58,7 +58,15 @@ dependencies {
     implementation 'com.scwang.smart:refresh-header-material:2.0.1'
     implementation 'com.scwang.smart:refresh-footer-classics:2.0.1'
     implementation 'com.google.android.exoplayer:exoplayer:2.15.0'
+    implementation 'com.google.android.exoplayer:extension-gvr:2.15.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
+
+    //implementation 'com.google.android.exoplayer:exoplayer:2.9.0'
+    //implementation 'com.google.android.exoplayer:extension-gvr:2.9.0'
+
+    //google vr
+    //implementation 'com.google.vr:sdk-audio:1.200.0'
+    //implementation 'com.google.vr:sdk-base:1.200.0'
 
     implementation 'com.danikula:videocache:2.7.0'
     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
@@ -68,5 +76,6 @@ dependencies {
     implementation'org.nanohttpd:nanohttpd:2.3.1'
 
     implementation 'com.hierynomus:smbj:0.11.5'
-    implementation files('libs/jcifs-1.3.19.jar')
+    implementation 'eu.agno3.jcifs:jcifs-ng:2.1.9'
+    //implementation files('libs/jcifs-1.3.19.jar')
 }

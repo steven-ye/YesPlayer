@@ -150,13 +150,10 @@ public class FilelistFragment extends Fragment {
     public void open(File file){
         if(null == file) return;
         System.out.println("Path: "+file.getPath());
-        FileFilter fileFilter = new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
-                boolean showHidden = sp.getBoolean("setting_hidden", true);
-                return showHidden || !file.isHidden();
-            }
+        FileFilter fileFilter = file1 -> {
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+            boolean showHidden = sp.getBoolean("setting_hidden", true);
+            return showHidden || !file1.isHidden();
         };
         //File file = new File(file.getPath());
         File[] files = file.listFiles(fileFilter);
@@ -210,9 +207,12 @@ public class FilelistFragment extends Fragment {
         )) {
             while (cursor.moveToNext()) {
                 MediaInfo info= new MediaInfo(cursor);
-                FileInfo fileInfo = new FileInfo(info.getName(), info.getPath(),"file://" + info.getPath());
+                FileInfo fileInfo = new FileInfo(info.getName(),
+                        info.getPath(),
+                        "file://" + info.getPath());
                 list.add(fileInfo);
-                Log.d("Video path", info.getUri().getPath());
+                Log.d("Video path",
+                        info.getUri().getPath());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -230,7 +230,8 @@ public class FilelistFragment extends Fragment {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         bitmap = MediaStore.Video.Thumbnails.getThumbnail(mContentResolver, id, MediaStore.Images.Thumbnails.MICRO_KIND, options);
         return bitmap;
-    }*/
+    }
+    */
 
     public void play(FileInfo info){
         Utils.log("FileName: "+info.getPath());
@@ -256,17 +257,14 @@ public class FilelistFragment extends Fragment {
         try {
             if(http.isAlive()) return;
             http.setUploadCallback((List<File> fileList)->{
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(fileList.size()>0){
-                            for(File f: fileList){
-                                Utils.showToast("上传成功: " + f.getName());
-                            }
-                            open(rootPath);
-                        }else{
-                            Utils.showToast("没有上传文件");
+                getActivity().runOnUiThread(() -> {
+                    if(fileList.size()>0){
+                        for(File f: fileList){
+                            Utils.showToast("上传成功: " + f.getName());
                         }
+                        open(rootPath);
+                    }else{
+                        Utils.showToast("没有上传文件");
                     }
                 });
             });

@@ -1,13 +1,7 @@
 package com.example.yesplayer.object;
 
-import android.content.ContentUris;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore;
-
-import com.example.yesplayer.smb.info.SmbFileInfo;
-
-import java.io.File;
 
 public class MusicInfo extends MediaInfo{
     public String album;

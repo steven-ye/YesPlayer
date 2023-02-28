@@ -11,6 +11,7 @@
         android:id="@+id/go_parent"
         android:layout_width="match_parent"
         android:layout_height="46dp"
+        android:visibility="gone"
         android:gravity="center_vertical">
         <ImageView
             android:layout_width="48dp"

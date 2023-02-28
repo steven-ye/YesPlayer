@@ -212,7 +212,7 @@ public class SMBJController implements Controller {
             //get file standard info by disk entry because file type unknown
             DiskEntry diskEntry = openDiskEntry(diskShare, getPathNotShare(dirInfo.getFileName()));
             FileStandardInformation standardInformation = diskEntry.getFileInformation(FileStandardInformation.class);
-            fileInfoList.add(new SmbFileInfo(dirInfo.getFileName(), standardInformation.isDirectory()));
+            fileInfoList.add(new SmbFileInfo(dirInfo.getFileName(), mPath, standardInformation.isDirectory()));
         }
         return fileInfoList;
     }

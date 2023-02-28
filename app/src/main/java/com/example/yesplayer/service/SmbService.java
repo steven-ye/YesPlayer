@@ -35,7 +35,7 @@ public class SmbService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("playchannel", "SMB服务", NotificationManager.IMPORTANCE_LOW);
+            NotificationChannel channel = new NotificationChannel("playchannel", "SMB2HTTP服务", NotificationManager.IMPORTANCE_LOW);
             channel.enableVibration(false);
             channel.setVibrationPattern(new long[]{0});
             channel.enableLights(false);
@@ -57,10 +57,10 @@ public class SmbService extends Service {
     }
 
     private Notification buildNotification() {
-        Notification.Builder builder = new Notification.Builder(this)
+        Notification.Builder builder = new Notification.Builder(this,"SmbPlayHelper")
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("SmbPlayHelper")
-                .setContentText("已开启SMB服务")
+                .setContentTitle("已开启SMB2HTTP服务")
+                .setContentText("http://"+SmbServer.SMB_IP+":"+SmbServer.SMB_PORT)
                 .setPriority(Notification.PRIORITY_DEFAULT)
                 .setContentIntent(null)
                 .setWhen(System.currentTimeMillis())

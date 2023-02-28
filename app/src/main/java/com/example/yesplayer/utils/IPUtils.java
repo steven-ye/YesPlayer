@@ -3,6 +3,7 @@ package com.example.yesplayer.utils;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.net.Inet6Address;
@@ -12,7 +13,10 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
-import jcifs.netbios.NbtAddress;
+import jcifs.Address;
+import jcifs.NameServiceClient;
+import jcifs.context.SingletonContext;
+
 
 public class IPUtils {
     public static String getIPAdress(Context context){
@@ -34,21 +38,25 @@ public class IPUtils {
                 ((ipAddress >> 24) & 0xFF);
     }
 
+    /**
     public static String getNameByIp(String ip){
         //String firstname = "Unknown";
-        String netbiosName = "Unknown";
+        String netbiosName = "";
         try{
-            NbtAddress[] nbts = NbtAddress.getAllByAddress(ip);
-            netbiosName = nbts[0].getHostName();
-            NbtAddress nbtAddress = NbtAddress.getByName(ip);
-            //firstname = nbtAddress.firstCalledName();
-            //netbiosName = nbtAddress.nextCalledName();
+            SingletonContext tc = SingletonContext.getInstance();
+            NameServiceClient nsc = tc.getNameServiceClient();
+            Address[] addrs = nsc.getNbtAllByAddress(ip);
+            for(Address address: addrs){
+                Log.d("IPUtils", "Samba Names: " + address.getHostName() +"<" + ip + ">");
+            }
+            netbiosName = addrs[0].getHostName();
         }catch (UnknownHostException e){
             e.printStackTrace();
         }
+        if(TextUtils.isEmpty(netbiosName)) netbiosName = "Unknown";
         return netbiosName;
     }
-
+     */
     /**
      * TODO<获取本机IP前缀>
      * @param devAddress

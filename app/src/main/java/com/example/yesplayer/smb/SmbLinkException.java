@@ -10,7 +10,7 @@ import java.util.List;
  */
 
 public class SmbLinkException extends Exception {
-    private List<DetailException> detailExceptions;
+    private final List<DetailException> detailExceptions;
 
     public SmbLinkException() {
         detailExceptions = new ArrayList<>();

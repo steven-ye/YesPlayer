@@ -1,6 +1,7 @@
 package com.example.yesplayer.smb.controller;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.yesplayer.smb.SmbLinkException;
 import com.example.yesplayer.smb.info.SmbFileInfo;
@@ -9,10 +10,12 @@ import com.example.yesplayer.smb.info.SmbType;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jcifs.context.SingletonContext;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
@@ -21,31 +24,35 @@ import jcifs.smb.SmbFile;
  */
 
 public class JCIFSController implements Controller {
+    private final String TAG = "JCIFSController";
     private static final String RootFlag = "/";
 
     private String mPath;
     private String mAuthUrl;
     private List<SmbFileInfo> rootFileList;
+    private final SingletonContext tContext;
 
-    private InputStream inputStream;
+    {
+        tContext = SingletonContext.getInstance();
+    }
 
     @Override
     public boolean linkStart(SmbLinkInfo smbLinkInfo, SmbLinkException exception) {
-
         //build smb url
         mAuthUrl = "smb://" + (smbLinkInfo.isAnonymous()
-                ? smbLinkInfo.getIP()
-                : smbLinkInfo.getAccount() + ":" + smbLinkInfo.getPassword() + "@" + smbLinkInfo.getIP()
+                ? smbLinkInfo.getIP() + "/"
+                : smbLinkInfo.getAccount() + ":" + smbLinkInfo.getPassword() + "@" + smbLinkInfo.getIP() + "/"
         );
 
         try {
-            SmbFile smbFile = new SmbFile(mAuthUrl);
+            SmbFile smbFile = new SmbFile(mAuthUrl, tContext);
             rootFileList = getFileInfoList(smbFile.listFiles());
 
             mPath = RootFlag;
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            Log.e(TAG, e.getMessage());
             exception.addException(SmbType.JCIFS, e.getMessage());
         }
         return false;
@@ -69,12 +76,13 @@ public class JCIFSController implements Controller {
             if (index == -1)
                 return rootFileList;
 
-            SmbFile smbFile = new SmbFile(mAuthUrl + mPath);
+            SmbFile smbFile = new SmbFile(mAuthUrl + mPath, tContext);
             if (smbFile.isDirectory() && smbFile.canRead()) {
                 fileInfoList.addAll(getFileInfoList(smbFile.listFiles()));
             }
         } catch (MalformedURLException | SmbException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
 
         return fileInfoList;
@@ -87,7 +95,7 @@ public class JCIFSController implements Controller {
 
         List<SmbFileInfo> fileInfoList = new ArrayList<>();
         try {
-            SmbFile smbFile = new SmbFile(mAuthUrl + mPath);
+            SmbFile smbFile = new SmbFile(mAuthUrl + mPath, tContext);
             if (smbFile.isDirectory() && smbFile.canRead()) {
                 fileInfoList.addAll(getFileInfoList(smbFile.listFiles()));
             }
@@ -103,12 +111,13 @@ public class JCIFSController implements Controller {
         List<SmbFileInfo> fileInfoList = new ArrayList<>();
         try {
             if(!TextUtils.isEmpty(dirName)) mPath += dirName + "/";
-            SmbFile smbFile = new SmbFile(mAuthUrl + mPath);
+            SmbFile smbFile = new SmbFile(mAuthUrl + mPath, tContext);
             if (smbFile.isDirectory() && smbFile.canRead()) {
                 fileInfoList.addAll(getFileInfoList(smbFile.listFiles()));
             }
         } catch (MalformedURLException | SmbException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            Log.d(TAG, e.getMessage());
         }
 
         return fileInfoList;
@@ -118,13 +127,13 @@ public class JCIFSController implements Controller {
     public InputStream getFileInputStream(String fileName) {
         try {
             String path = mPath + fileName + "/";
-            SmbFile smbFile = new SmbFile(mAuthUrl + path);
+            SmbFile smbFile = new SmbFile(mAuthUrl + path, tContext);
             if (smbFile.isFile() && smbFile.canRead()) {
-                inputStream = smbFile.getInputStream();
-                return inputStream;
+                return smbFile.getInputStream();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            Log.d(TAG, e.getMessage());
         }
 
         return null;
@@ -134,10 +143,11 @@ public class JCIFSController implements Controller {
     public long getFileLength(String fileName) {
         try {
             String filePath = mPath + fileName + "/";
-            SmbFile smbFile = new SmbFile(mAuthUrl + filePath);
-            return smbFile.getContentLength();
+            SmbFile smbFile = new SmbFile(mAuthUrl + filePath, tContext);
+            return smbFile.getContentLengthLong();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            Log.d(TAG, e.getMessage());
         }
         return 0;
     }
@@ -160,20 +170,19 @@ public class JCIFSController implements Controller {
     private List<SmbFileInfo> getFileInfoList(SmbFile[] smbFiles) {
         List<SmbFileInfo> fileInfoList = new ArrayList<>();
         for (SmbFile smbFile : smbFiles) {
-            boolean isDirectory = true;
             try {
-                isDirectory = smbFile.isDirectory();
+                boolean isDirectory = smbFile.isDirectory();
+                //remove / at the end of the path
+                String smbFileName = smbFile.getName();
+                smbFileName = smbFileName.endsWith("/")
+                        ? smbFileName.substring(0, smbFileName.length() - 1)
+                        : smbFileName;
+                //Log.d(TAG, mPath + smbFileName);
+                fileInfoList.add(new SmbFileInfo(smbFileName, mPath, isDirectory));
             } catch (SmbException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                Log.d(TAG, e.getMessage());
             }
-
-            //remove / at the end of the path
-            String smbFileName = smbFile.getName();
-            smbFileName = smbFileName.endsWith("/")
-                    ? smbFileName.substring(0, smbFileName.length() - 1)
-                    : smbFileName;
-
-            fileInfoList.add(new SmbFileInfo(smbFileName, isDirectory));
         }
 
         return fileInfoList;

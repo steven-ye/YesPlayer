@@ -89,4 +89,10 @@
         android:name="com.example.yesplayer.ui.about.AboutFragment"
         android:label="@string/menu_about"
         tools:layout="@layout/fragment_about" />
+
+    <fragment
+        android:id="@+id/nav_play"
+        android:name="com.example.yesplayer.ui.play.PlayFragment"
+        android:label="{title}"
+        tools:layout="@layout/fragment_play" />
 </navigation>

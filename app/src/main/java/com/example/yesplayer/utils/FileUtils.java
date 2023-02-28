@@ -1,32 +1,23 @@
 package com.example.yesplayer.utils;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.text.TextUtils;
-import android.widget.Toast;
-
-import androidx.core.app.ActivityCompat;
-
-import com.example.yesplayer.IApplication;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
- * Created by xyoye on 2019/7/23.
+ * Created by Steven Ye on 2020/9/18.
  */
 
 public class FileUtils {
     /**
-     * 判断视频格式
+     * 判断媒体格式
      */
     public static boolean isMediaFile(String fileName){
+        return isVideoFile(fileName) || isMusicFile(fileName);
+    }
+    /**
+     * 判断视频格式
+     */
+    public static boolean isVideoFile(String fileName){
         switch (getFileExtension(fileName).toLowerCase()){
             case "3gp":
             case "avi":
@@ -51,7 +42,7 @@ public class FileUtils {
         }
     }
     /**
-     * 判断视频格式
+     * 判断音乐格式
      */
     public static boolean isMusicFile(String fileName){
         switch (getFileExtension(fileName).toLowerCase()){

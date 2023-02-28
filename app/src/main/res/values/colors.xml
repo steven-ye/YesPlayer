@@ -13,4 +13,7 @@
     <color name="grey">#FF999999</color>
     <color name="grey_light">#FFDEDEDE</color>
     <color name="bg_grey_light">#FFF0F0F0</color>
+    <color name="bg_gray_trans">#80252323</color>
+    <color name="bg_gray_80">#80999999</color>
+    <color name="bg_gray_40">#40FFFFFF</color>
 </resources>

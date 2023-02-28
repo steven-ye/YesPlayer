@@ -3,6 +3,8 @@ package com.example.yesplayer;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -11,6 +13,7 @@ import androidx.preference.PreferenceManager;
 
 import com.example.yesplayer.CustomMedia.JZMediaExo;
 import com.example.yesplayer.CustomMedia.JZMediaIjk;
+import com.example.yesplayer.utils.FileUtils;
 
 import cn.jzvd.JZMediaSystem;
 import cn.jzvd.Jzvd;
@@ -23,8 +26,8 @@ public class PlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
-        String videoUrl = getIntent().getStringExtra("videoUrl");
         String fileName = getIntent().getStringExtra("fileName");
+        String mediaUrl = getIntent().getStringExtra("mediaUrl");
 
         if (getSupportActionBar() != null) {
             ActionBar actionBar = getSupportActionBar();
@@ -33,8 +36,10 @@ public class PlayerActivity extends AppCompatActivity {
         }
         setTitle(fileName);
 
+        ImageView imageView = (ImageView)findViewById(R.id.image_music);
+        imageView.setVisibility(FileUtils.isMusicFile(fileName)? View.VISIBLE:View.GONE);
         JzvdStd jzvdStd = (JzvdStd) findViewById(R.id.jz_video);
-        jzvdStd.setUp(videoUrl, fileName);
+        jzvdStd.setUp(mediaUrl, fileName);
         String playerOption = PreferenceManager.getDefaultSharedPreferences(this).getString("setting_player","ijk");
         System.out.println("播放器： "+playerOption);
         switch(playerOption){
@@ -50,8 +55,12 @@ public class PlayerActivity extends AppCompatActivity {
                 //jzvdStd.setUp(videoUrl, fileName, JzvdStd.SCREEN_NORMAL, JZMediaIjk.class);
                 jzvdStd.setMediaInterface(JZMediaIjk.class);
         }
-        //jzvdStd.posterImageView.setImage("http://p.qpic.cn/videoyun/0/2449_43b6f696980311e59ed467f22794e792_1/640");
-
+        if(FileUtils.isMusicFile(fileName)){
+            jzvdStd.setBackgroundResource(R.drawable.ic_baseline_music_video_24);
+            //jzvdStd.posterImageView.setImageResource(R.drawable.ic_baseline_music_video_24);
+            //Glide.with(this).load(R.drawable.ic_baseline_music_video_24).into(jzvdStd.posterImageView);   //推荐使用Glide
+        }
+        //Jzvd.setVideoImageDisplayType(Jzvd.VIDEO_IMAGE_DISPLAY_TYPE_ORIGINAL);
         //Jzvd.setVideoImageDisplayType(Jzvd.VIDEO_IMAGE_DISPLAY_TYPE_ADAPTER);
         //准备好立刻播放视频
         jzvdStd.startVideo();
@@ -81,6 +90,13 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Jzvd.releaseAllVideos();
+        //Jzvd.releaseAllVideos();
+        Jzvd.goOnPlayOnPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Jzvd.goOnPlayOnResume();
     }
 }

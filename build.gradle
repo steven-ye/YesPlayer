@@ -9,6 +9,12 @@ buildscript {
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+
+        // Adds Google VR spatial audio support
+        //compile 'com.google.vr:sdk-audio:1.200.0'
+
+        // Required for all Google VR apps
+        //compile 'com.google.vr:sdk-base:1.200.0'
     }
 }
 

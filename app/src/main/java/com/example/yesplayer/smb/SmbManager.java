@@ -15,13 +15,8 @@ import com.hierynomus.smbj.SMBClient;
 import com.hierynomus.smbj.connection.Connection;
 
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,19 +24,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import jcifs.netbios.NbtAddress;
+import jcifs.Address;
+import jcifs.NameServiceClient;
+import jcifs.context.SingletonContext;
 
 /**
  * Created by xyoye on 2019/12/20.
  */
 
 public class SmbManager {
-    String TAG = "SmbManager";
+    final String TAG = "SmbManager";
     private boolean isLinked;
     private Controller controller;
     private final SmbLinkException smbLinkException;
 
-    private boolean smbJEnable = true;
+    private boolean smbJEnable = false;
     private boolean jcifsEnable = true;
     private SmbType mSmbType;
 
@@ -129,7 +126,22 @@ public class SmbManager {
         this.jcifsEnable = jcifsEnable;
     }
 
-    public List<Map<String,String>> getServerList(Context context){
+    public String getServerByIp(String ip){
+        //String firstname = "Unknown";
+        String serverName;
+        try{
+            SingletonContext tc = SingletonContext.getInstance();
+            NameServiceClient nsc = tc.getNameServiceClient();
+            Address[] addrs = nsc.getNbtAllByAddress(ip);
+            serverName = addrs[0].getHostName();
+        }catch (UnknownHostException e){
+            //e.printStackTrace();
+            serverName = null;
+        }
+        return serverName;
+    }
+
+    public List<Map<String,String>> getServerList(Context context) {
         final List<Map<String,String>> servers = new ArrayList<>();
         String devAddress = IPUtils.getIPAdress(context);
         String localSegment = IPUtils.getLocAddrIndex(devAddress);
@@ -137,11 +149,13 @@ public class SmbManager {
         for(int i=1;i<255;i++){
             final String ip = localSegment + i;
             Runnable syncTask = () -> {
-                if(isLinkable(ip)){
+                String name = getServerByIp(ip);
+                if(null != name){
                     Map<String,String> map = new HashMap<>();
-                    map.put("ip",ip);
-                    map.put("name", IPUtils.getNameByIp(ip));
+                    map.put("name", name);
+                    map.put("ip", ip);
                     servers.add(map);
+                    Log.d(TAG, "Found Smb Host: " + ip + " " + name);
                 }
             };
             executorService.execute(syncTask);
@@ -150,9 +164,11 @@ public class SmbManager {
         executorService.shutdown();
 
         try {
-            executorService.awaitTermination(120, TimeUnit.SECONDS);
+            boolean result = executorService.awaitTermination(120, TimeUnit.SECONDS);
+            if(!result) executorService.shutdownNow();
         } catch (InterruptedException e) {
             e.printStackTrace();
+            executorService.shutdownNow();
         }
 
         return servers;

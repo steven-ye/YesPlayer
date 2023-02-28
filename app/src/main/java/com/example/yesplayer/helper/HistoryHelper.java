@@ -2,6 +2,7 @@ package com.example.yesplayer.helper;
 
 import com.example.yesplayer.Config;
 import com.example.yesplayer.object.FileInfo;
+import com.example.yesplayer.smb.info.SmbFileInfo;
 import com.example.yesplayer.utils.SPUtils;
 
 import java.text.SimpleDateFormat;
@@ -30,7 +31,7 @@ public class HistoryHelper {
         return fileList;
     }
 
-    public static void save(String name,String path,String url,String ip){
+    public static void save(SmbFileInfo fileInfo, String url, String ip){
         //如果设置允许记录播放历史
         List<Map<String,String>> list = SPUtils.getInstance().getDataList(Config.SP_HISTORY);
 
@@ -41,8 +42,8 @@ public class HistoryHelper {
             }
         }
         Map<String,String> map = new HashMap<>();
-        map.put("name",name);
-        map.put("path",path);
+        map.put("name",fileInfo.getFileName());
+        map.put("path",fileInfo.getPath());
         map.put("url",url);
         map.put("ip",ip);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.CHINA);// HH:mm:ss
@@ -57,7 +58,7 @@ public class HistoryHelper {
     }
 
     public static void save(FileInfo fileInfo){
-        save(fileInfo.getFileName(), fileInfo.getPath(), fileInfo.getUrl(), fileInfo.getIp());
+        save(fileInfo, fileInfo.getUrl(), fileInfo.getIp());
     }
 
     public static boolean remove(int position){

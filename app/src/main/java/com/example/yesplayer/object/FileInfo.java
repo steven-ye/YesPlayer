@@ -5,38 +5,19 @@ import com.example.yesplayer.smb.info.SmbFileInfo;
 import java.io.File;
 
 public class FileInfo extends SmbFileInfo {
-    private String mPath;
-    private String mIp;
     private String mUrl;
 
     public FileInfo(File file){
-        super(file.getName(), file.isDirectory());
-        mPath = file.getPath();
+        super(file.getPath(), file.getName(), file.isDirectory());
         mUrl = "file://" + file.getPath();
     }
 
     public FileInfo(String name, String path, String url) {
-        super(name,false);
-        mPath = path;
+        super(name, path,false);
         mUrl = url;
     }
     public FileInfo(String name, String path, boolean isDir) {
-        super(name,isDir);
-        mPath = path;
-    }
-
-    public String getPath(){
-        return mPath;
-    }
-    public void setPath(String path){
-        mPath = path;
-    }
-
-    public String getIp(){
-        return mIp;
-    }
-    public void setIp(String ip){
-        mIp = ip;
+        super(name, path, isDir);
     }
 
     public String getUrl(){
